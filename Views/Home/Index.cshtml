@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div id="app">{{message}}</div>
+
+<script>
+    let app = new Vue({
+        el: '#app',
+        data: {
+            message: `this is the home page`
+        }
+    })
+</script>
