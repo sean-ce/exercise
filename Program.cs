@@ -22,11 +22,15 @@ app.UseAuthorization();
 
 
 app.MapControllerRoute(
-    name: "Home",
+    name: "Default",
     pattern: "{controller=Home}/{action=Index}");
 
 app.MapControllerRoute(
+    name: "Home",
+    pattern: "home/{controller=Home}/{action=Index}");
+
+app.MapControllerRoute(
     name: "Login",
-    pattern: "{controller=Login}/{action=Index}");
+    pattern: "account/{controller=Login}/{action=Index}");
 
 app.Run();
