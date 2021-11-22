@@ -40,7 +40,7 @@ namespace exercise.Controllers
                  * we set the cookie to expire within 1 seconds
                  * more than enough time for the redirect to happen
                  */
-                CookieOptions cookieOptions = new CookieOptions();
+                CookieOptions cookieOptions = new();
                 cookieOptions.Expires = new DateTimeOffset(DateTime.Now.AddSeconds(1));
                 Response.Cookies.Append("isAuthenticated", "true", cookieOptions);
                 Response.Redirect("/home/index");
