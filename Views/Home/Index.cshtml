@@ -2,13 +2,106 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div id="app">{{message}}</div>
+<div id="app">
+    <h2>Territories</h2>
+    <p>Here are the list of territories</p>
+    <ul id="myUL">
+    </ul>
+</div>
 
 <script>
     let app = new Vue({
         el: '#app',
         data: {
-            message: `this is the home page`
-        }
-    })
+            data: []
+        },
+        mounted() {
+            let div = document.createElement("div");
+            div.innerHTML = '@ViewBag.Data';
+            let data = JSON.parse(div.innerHTML).data;
+                
+            data = data.sort((a, b) => {
+                a.parent = isNaN(a.parent) ? 0 : a.parent;
+                b.parent = isNaN(b.parent) ? 0 : b.parent;
+                if ( a.parent < b.parent ) {
+                    return -1;
+                }
+                if ( a.parent > b.parent ) {
+                    return 1;
+                }
+                return 0;
+            });
+            this.getFormattedData(data, document.getElementById("myUL"));
+
+            var toggler = document.getElementsByClassName("caret");
+            for (let i = 0; i < toggler.length; i++) {
+                toggler[i].addEventListener("click", function() {
+                    this.parentElement.querySelector(".nested").classList.toggle("active");
+                    this.classList.toggle("caret-down");
+                });
+            }
+        },
+        methods: {
+            getFormattedData(data, parentDom, parent = { id: null }) {
+                console.log(parentDom, parent);
+                let newData = data.filter((elem) => {
+                    return elem.parent == parent.id;
+                });
+                let trimmedData = data.filter((elem) => {
+                    return elem.parent != parent.id;
+                });
+                if (newData.length == 0) {
+                    parentDom.innerHTML = parent.name;
+                } else if (parent.id) {
+                    let span = document.createElement('span');
+                    span.setAttribute("class", "caret");
+                    span.innerHTML = parent.name;
+                    parentDom.appendChild(span);
+                    let ul = document.createElement('ul');
+                    ul.setAttribute("class", "nested");
+                    parentDom.appendChild(ul);
+                    parentDom = ul;
+                }
+                for (var i = 0; i < newData.length; i++) {
+                    let li = document.createElement("li");
+                    parentDom.appendChild(li);
+                    this.getFormattedData(trimmedData, li, newData[i]);
+                }
+            }
+        },
+    });
 </script>
+
+<style>
+ul, #myUL {
+    list-style-type: none;
+}
+#myUL {
+    margin: 0;
+    padding: 0;
+}
+.caret {
+    cursor: pointer;
+    -webkit-user-select: none; /* Safari 3.1+ */
+    -moz-user-select: none; /* Firefox 2+ */
+    -ms-user-select: none; /* IE 10+ */
+    user-select: none;
+}
+.caret::before {
+    content: "\25B6";
+    color: black;
+    display: inline-block;
+    margin-right: 6px;
+}
+.caret-down::before {
+    -ms-transform: rotate(90deg); /* IE 9 */
+    -webkit-transform: rotate(90deg); /* Safari */'
+    transform: rotate(90deg);
+}
+.nested {
+    display: none;
+}
+.active {
+    display: block;
+}
+</style>
