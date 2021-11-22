@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace exercise.Controllers
 {
@@ -8,17 +9,19 @@ namespace exercise.Controllers
         {
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
             /*
              * initialize to redirect to the login page 
              */
             Boolean redirect = true;
-            foreach (KeyValuePair<string, string> cookie in Request.Cookies) {
+            foreach (KeyValuePair<string, string> cookie in Request.Cookies) 
+            {
                 /*
                  * reset the redirect to false if we see the cookie with the corresponding
                  */
-                if (cookie.Key == "isAuthenticated" && cookie.Value == "true") { 
+                if (cookie.Key == "isAuthenticated" && cookie.Value == "true") 
+                { 
                     redirect = false;
                     /*
                      * we make sure we clear the cookie 
@@ -29,13 +32,33 @@ namespace exercise.Controllers
                 }
             }
 
-            if (redirect) {
+            if (redirect)
+            {
                 Response.Redirect("/account/login");
             }
-
-
+            else 
+            {
+                await GetData();
+            }            
 
             return View();
+        }
+
+        public async Task GetData()
+        {
+            HttpClient client = new();
+            /*
+             * get data
+             */
+            HttpResponseMessage? response = await client.GetAsync("https://netzwelt-devtest.azurewebsites.net/Territories/All");
+
+            if (response.IsSuccessStatusCode)
+            {
+                Debug.WriteLine(">>>>>>>>>>>>>>> " + response.ToString());
+            }
+            else {
+                ViewBag.AuthMessage = "Something went wrong";
+            }
         }
     }
 }
