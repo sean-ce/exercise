@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace exercise.Controllers
 {
@@ -54,7 +53,8 @@ namespace exercise.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                Debug.WriteLine(">>>>>>>>>>>>>>> " + response.ToString());
+                string jsonDataString = await response.Content.ReadAsStringAsync();
+                ViewBag.Data = jsonDataString;
             }
             else {
                 ViewBag.AuthMessage = "Something went wrong";
